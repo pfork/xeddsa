@@ -12,13 +12,9 @@ int curve25519_sign(unsigned char* signature_out,
 {
   ge_p3 ed_pubkey_point; /* Ed25519 pubkey point */
   unsigned char ed_pubkey[32]; /* Ed25519 encoded pubkey */
-  unsigned char *sigbuf; /* working buffer */
+  if(msg_len>2048) return -1; /* limit msg size as we allocate on stack */
+  unsigned char sigbuf[msg_len+128]; /* working buffer copies msg to stack!!! */
   unsigned char sign_bit = 0;
-
-  if ((sigbuf = malloc(msg_len + 128)) == 0) {
-    memset(signature_out, 0, 64);
-    return -1;
-  }
 
   /* Convert the Curve25519 privkey to an Ed25519 public key */
   ge_scalarmult_base(&ed_pubkey_point, curve25519_privkey);
@@ -34,7 +30,6 @@ int curve25519_sign(unsigned char* signature_out,
    signature_out[63] &= 0x7F; /* bit should be zero already, but just in case */
    signature_out[63] |= sign_bit;
 
-   free(sigbuf);
    return 0;
 }
 
@@ -45,19 +40,10 @@ int curve25519_verify(const unsigned char* signature,
   fe u;
   fe y;
   unsigned char ed_pubkey[32];
-  unsigned char *verifybuf  = NULL; /* working buffer */
-  unsigned char *verifybuf2 = NULL; /* working buffer #2 */
+  if(msg_len>2048) return -1; /* limit msg size as we allocate on stack */
+  unsigned char verifybuf[msg_len+64]; /* working buffer copies msg to stack!!!*/
+  unsigned char verifybuf2[msg_len+64]; /* working buffer #2 copies msg to stack!!!*/
   int result;
-
-  if ((verifybuf = malloc(msg_len + 64)) == 0) {
-   result = -1;
-   goto err;
-  }
-
-  if ((verifybuf2 = malloc(msg_len + 64)) == 0) {
-    result = -1;
-    goto err;
-  }
 
   /* Convert the Curve25519 public key into an Ed25519 public key.  In
      particular, convert Curve25519's "montgomery" x-coordinate (u) into an
@@ -87,16 +73,6 @@ int curve25519_verify(const unsigned char* signature,
   /* verifybuf2 = internal to next call gets a copy of verifybuf, S gets 
      replaced with pubkey for hashing */
   result = crypto_sign_open_modified(verifybuf2, verifybuf, 64 + msg_len, ed_pubkey);
-
-  err:
-
-  if (verifybuf != NULL) {
-    free(verifybuf);
-  }
-
-  if (verifybuf2 != NULL) {
-    free(verifybuf2);
-  }
 
   return result;
 }

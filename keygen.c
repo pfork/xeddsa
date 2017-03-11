@@ -1,5 +1,5 @@
 #include "ge.h"
-#include "keygen.h"
+#include "xeddsa_keygen.h"
 #include "crypto_additions.h"
 
 void curve25519_keygen(unsigned char* curve25519_pubkey_out,

@@ -13,13 +13,9 @@ int xed25519_sign(unsigned char* signature_out,
   unsigned char a[32], aneg[32];
   unsigned char A[32];
   ge_p3 ed_pubkey_point;
-  unsigned char *sigbuf; /* working buffer */
+  if(msg_len>2048) return -1; /* limit msg size as we allocate on stack */
+  unsigned char sigbuf[msg_len+128]; /* working buffer copies msg onto stack!!!*/
   unsigned char sign_bit = 0;
-
-  if ((sigbuf = malloc(msg_len + 128)) == 0) {
-    memset(signature_out, 0, 64);
-    return -1;
-  }
 
   /* Convert the Curve25519 privkey to an Ed25519 public key */
   ge_scalarmult_base(&ed_pubkey_point, curve25519_privkey);
@@ -38,7 +34,6 @@ int xed25519_sign(unsigned char* signature_out,
 
   zeroize(a, 32);
   zeroize(aneg, 32);
-  free(sigbuf);
   return 0;
 }
 

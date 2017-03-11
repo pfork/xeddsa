@@ -1,6 +1,6 @@
 #include <string.h>
 #include "crypto_sign.h"
-#include "crypto_hash_sha512.h"
+#include "crypto_generichash.h"
 #include "ge.h"
 #include "sc.h"
 #include "zeroize.h"
@@ -34,7 +34,7 @@ int crypto_vsign_modified(
   memmove(sm + 64, V, 32);
 
   memmove(sm + 96, random, 64); /* Add suffix of random data */
-  crypto_hash_sha512(r, sm, 160);
+  crypto_generichash(r, sizeof(r), sm, 160, NULL, 0);
 
   sc_reduce(r);
   ge_scalarmult_base(&R, r);
@@ -48,7 +48,7 @@ int crypto_vsign_modified(
   ge_p3_tobytes(sm+128, &Rv);
   memmove(sm + 160, M, Mlen);
 
-  crypto_hash_sha512(h, sm, Mlen + 160);
+  crypto_generichash(h, sizeof(h), sm, Mlen + 160, NULL, 0);
   sc_reduce(h);
 
   memmove(sm, h, 32);               /* Write h */

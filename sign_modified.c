@@ -1,6 +1,6 @@
 #include <string.h>
 #include "crypto_sign.h"
-#include "crypto_hash_sha512.h"
+#include "crypto_generichash.h"
 #include "ge.h"
 #include "sc.h"
 #include "zeroize.h"
@@ -33,7 +33,7 @@ int crypto_sign_modified(
   /* NEW: add suffix of random data */
   memmove(sm + mlen + 64, random, 64);
 
-  crypto_hash_sha512(nonce,sm,mlen + 128);
+  crypto_generichash(nonce,sizeof(nonce), sm,mlen + 128, NULL, 0);
   memmove(sm + 32,pk,32);
 
   sc_reduce(nonce);
@@ -41,7 +41,7 @@ int crypto_sign_modified(
   ge_scalarmult_base(&R,nonce);
   ge_p3_tobytes(sm,&R);
 
-  crypto_hash_sha512(hram,sm,mlen + 64);
+  crypto_generichash(hram,sizeof(hram),sm,mlen + 64, NULL, 0);
   sc_reduce(hram);
   sc_muladd(sm + 32,hram,sk,nonce); /* NEW: Use privkey directly */
 

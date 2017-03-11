@@ -1,6 +1,6 @@
 #include <string.h>
 #include "crypto_sign.h"
-#include "crypto_hash_sha512.h"
+#include "crypto_generichash.h"
 #include "crypto_verify_32.h"
 #include "ge.h"
 #include "sc.h"
@@ -30,7 +30,7 @@ int crypto_sign_open_modified(
 
   memmove(m,sm,smlen);
   memmove(m + 32,pkcopy,32);
-  crypto_hash_sha512(h,m,smlen);
+  crypto_generichash(h,sizeof(h), m,smlen, NULL, 0);
   sc_reduce(h);
 
   ge_double_scalarmult_vartime(&R,h,&A,scopy);

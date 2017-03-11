@@ -2,13 +2,12 @@
 #include "fe.h"
 #include "ge.h"
 #include "crypto_uint32.h"
-#include "crypto_hash_sha512.h"
+#include "crypto_generichash.h"
 #include "crypto_additions.h"
 
 unsigned int legendre_is_nonsquare(fe in)
 {
   fe temp;
-  unsigned char bytes[32];
   fe_pow22523(temp, in);  /* temp = in^((q-5)/8) */
   fe_sq(temp, temp);      /*        in^((q-5)/4) */ 
   fe_sq(temp, temp);      /*        in^((q-5)/2) */
@@ -20,6 +19,7 @@ unsigned int legendre_is_nonsquare(fe in)
    * 0  = input is zero
    * -1 = nonsquare
    */
+  unsigned char bytes[32];
   fe_tobytes(bytes, temp);
   return 1 & bytes[31];
 }
@@ -65,7 +65,7 @@ void hash_to_point(ge_p3* p, const unsigned char* in, const unsigned long in_len
   unsigned char sign_bit;
   ge_p3 p3;
 
-  crypto_hash_sha512(hash, in, in_len);
+  crypto_generichash(hash, sizeof(hash), in, in_len, NULL, 0);
 
   /* take the high bit as Edwards sign bit */
   sign_bit = (hash[31] & 0x80) >> 7; 
