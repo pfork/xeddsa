@@ -1,4 +1,4 @@
-CFLAGS=-O3 -g -I/usr/include/sodium
+CFLAGS=-O3 -g -I/usr/include/sodium -DNDEBUG
 objs=elligator.o vxeddsa.o xeddsa.o keygen.o zeroize.o curve_sigs.o \
 	fe_isequal.o fe_mont_rhs.o fe_montx_to_edy.o ge_montx_to_p3.o \
 	ge_p3_to_montx.o ge_scalarmult.o ge_scalarmult_cofactor.o \
