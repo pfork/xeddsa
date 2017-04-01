@@ -4,6 +4,7 @@
 
 #define crypto_xeddsa_BYTES 64
 #define crypto_xeddsa_PUBLICKEYBYTES 32
+#define crypto_xeddsa_SECRETKEYBYTES 32
 
 /* returns 0 on success */
 int xed25519_sign(unsigned char* signature_out, /* 64 bytes */
