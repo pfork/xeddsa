@@ -2,6 +2,9 @@
 #ifndef __XEDDSA_H__
 #define __XEDDSA_H__
 
+#define crypto_xeddsa_BYTES 64
+#define crypto_xeddsa_PUBLICKEYBYTES 32
+
 /* returns 0 on success */
 int xed25519_sign(unsigned char* signature_out, /* 64 bytes */
                   const unsigned char* curve25519_privkey, /* 32 bytes */
