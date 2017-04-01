@@ -61,7 +61,7 @@ int xed25519_verify(const unsigned char* signature,
   fe_frombytes(u, curve25519_pubkey);
   fe_tobytes(strict, u);
   if (crypto_verify_32(strict, curve25519_pubkey) != 0)
-    return 0;
+    return -1;
   fe_montx_to_edy(y, u);
   fe_tobytes(ed_pubkey, y);
 
