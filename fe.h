@@ -1,6 +1,6 @@
 #ifndef FE_H
 #define FE_H
-
+#include <../sodium/version.h>
 #include "crypto_int32.h"
 
 typedef crypto_int32 fe[10];
@@ -13,6 +13,11 @@ t[0]+2^26 t[1]+2^51 t[2]+2^77 t[3]+2^102 t[4]+...+2^230 t[9].
 Bounds on each t[i] vary depending on context.
 */
 
+#if SODIUM_LIBRARY_VERSION_MAJOR > 9
+#define fe_frombytes                  fe25519_frombytes
+#define fe_tobytes                    fe25519_tobytes
+#define fe_invert                     fe25519_invert
+#else
 #define fe_frombytes crypto_core_curve25519_ref10_fe_frombytes
 #define fe_tobytes crypto_core_curve25519_ref10_fe_tobytes
 #define fe_copy crypto_core_curve25519_ref10_fe_copy
@@ -31,6 +36,7 @@ Bounds on each t[i] vary depending on context.
 #define fe_mul121666 crypto_core_curve25519_ref10_fe_mul121666
 #define fe_invert crypto_core_curve25519_ref10_fe_invert
 #define fe_pow22523 crypto_core_curve25519_ref10_fe_pow22523
+#endif // SODIUM_LIBRARY_VERSION_MAJOR > 9
 
 extern void fe_frombytes(fe,const unsigned char *);
 extern void fe_tobytes(unsigned char *,const fe);

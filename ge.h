@@ -1,5 +1,6 @@
 #ifndef GE_H
 #define GE_H
+#include <../sodium/version.h>
 
 /*
 ge means group element.
@@ -50,6 +51,13 @@ typedef struct {
   fe T2d;
 } ge_cached;
 
+#if SODIUM_LIBRARY_VERSION_MAJOR > 9
+#define ge_double_scalarmult_vartime  ge25519_double_scalarmult_vartime
+#define ge_frombytes_negate_vartime   ge25519_frombytes_negate_vartime
+#define ge_scalarmult_base            ge25519_scalarmult_base
+#define ge_p3_tobytes                 ge25519_p3_tobytes
+#define ge_tobytes                    ge25519_tobytes
+#else
 #define ge_frombytes_negate_vartime crypto_core_curve25519_ref10_ge_frombytes_negate_vartime
 #define ge_tobytes crypto_core_curve25519_ref10_ge_tobytes
 #define ge_p3_tobytes crypto_core_curve25519_ref10_ge_p3_tobytes
@@ -70,6 +78,7 @@ typedef struct {
 #define ge_sub crypto_core_curve25519_ref10_ge_sub
 #define ge_scalarmult_base crypto_core_curve25519_ref10_ge_scalarmult_base
 #define ge_double_scalarmult_vartime crypto_core_curve25519_ref10_ge_double_scalarmult_vartime
+#endif // SODIUM_LIBRARY_VERSION_MAJOR > 9
 
 extern void ge_tobytes(unsigned char *,const ge_p2 *);
 extern void ge_p3_tobytes(unsigned char *,const ge_p3 *);
